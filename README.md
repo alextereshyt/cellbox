@@ -17,6 +17,3 @@ Cellular War is a procedurally generated cellular automaton game that simulates 
 4. **Warfare:** Warfare occurs when two civilizations come into conflict over resources or territory. The outcome of a war is determined by a number of factors, including the size of the armies involved, the technological level of the civilizations, and the terrain of the battlefield.
 5. **Technology Research:** Civilizations can research new technologies, which can provide them with advantages in warfare, resource extraction, and other areas.
 
-**Technologies**
-* **Godot Engine:** The game will be developed using the Godot game engine for its powerful scripting capabilities and cross-platform support.
-* **C#:** The game will be programmed using C#, leveraging the .NET framework for advanced programming features.
