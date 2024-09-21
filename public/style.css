@@ -12,9 +12,12 @@
 }
 
 .number{
-    width: 70px;
-    height: 20px; 
+    width: 50px;
     font-size: 30px;
+    background: none;
+    border: none;
+    color: #0075FF;
+    outline: none;
 }
 
 .control-panel {
@@ -64,13 +67,25 @@ body {
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 35px;
+    font-size: 30px;
     border: none;
-    position: relative;
-    left: 18px;
+  
     
   }
+
 .button:hover{
     background-color: #005CC8;
+}
+
+.option-centered{
+    display: flex;
+    justify-content: center;
+}
+
+.title{
+text-align: center;
+}
+
+.option{
 }
 

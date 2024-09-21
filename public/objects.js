@@ -140,7 +140,6 @@ export const templateCell = {
           direction.y + this.y >= 0 && direction.y + this.y < gridHeight &&
           isEmptyCell(direction.x + this.x, direction.y + this.y) &&
           this.energy
-
         ) {
           this.x = direction.x + this.x;
           this.y = direction.y + this.y;
@@ -225,7 +224,12 @@ export function fillTracer(cell) {
 
 export function updateTracers(){
 tracersContainer.children.forEach(element => {
-  if(element.alpha-0.02 >= 0)element.alpha-=0.02;
+  element.alpha-=0.02;
+  if(element.alpha <= 0){
+    var index = tracersContainer.children.indexOf(element);
+        if (index > -1) {
+          tracersContainer.children.splice(index, 1);
+        }}
 });
 
 }
