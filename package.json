@@ -6,7 +6,7 @@
   "main": "app.js",
   "scripts": {
     "dev": "live-server ./public",
-    "test":"node index.js"
+    "test": "node index.js"
   },
   "keywords": [],
   "author": "",

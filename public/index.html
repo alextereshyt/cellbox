@@ -1,12 +1,48 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Cellular War</title>
     <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <script src="perlin.js"></script>
-    <script src="https://pixijs.download/release/pixi.js"></script>
+    <script src="./libraries/perlin.js"></script>
     <script src="game.js" type="module"></script>
+</head>
+
+<body>
+    <div class="control-panel">
+        <div class="title">
+            <label>Cellular War v.1</label>
+
+        </div>
+        <br />
+        <label>Visual options:</label>
+        <div class="option">
+            <input type="checkbox" class="checkbox" id="panelCellsStatus" checked>
+            <label>show cells</label>
+        </div>
+
+        <div class="option">
+            <input type="checkbox" class="checkbox" id="panelTracersStatus" checked>
+            <label>show tracers</label>
+        </div>
+
+        <br />
+        <label>Init options:</label>
+        <div class="option">
+            <label>cell size:</label>
+            <input type="number" class="number" id="panelCellSize" step="0.1">
+        </div>
+        <div class="option">
+            <label>grid gaps:</label>
+            <input type="number" class="number" id="panelCellSize" step="0.1">
+        </div>
+
+        <button class="button" onclick="">Initialize</button>
+
+
+    </div>
+
+
 </body>
+
 </html>
