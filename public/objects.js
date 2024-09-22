@@ -1,7 +1,7 @@
 //objects.js
 import {
   cellSize,
-  grid,
+  terrainGrid,
   gridWidth,
   gridHeight,
   cells,
@@ -12,14 +12,14 @@ import {
   tracersOpacityMultipler,
   tracersMaxOpacity,
   initialEnergy,
-  maxOffsping
+  maxOffsping,
+  cellsGrid
 } from './game.js';
 import {
   Graphics
 } from './libraries/pixi.mjs'
 
-
-// Terrain template (using object destructuring for clarity)
+// Terrain 
 export const templateTerrain = {
   type: String,
   color: String,
@@ -34,13 +34,6 @@ function determineTerrainType(normalizedNoise) {
   } else {
     return 'plain';
   }
-}
-
-function map(value, start1, end1, start2, end2) {
-  const range1 = end1 - start1;
-  const range2 = end2 - start2;
-  const ratio = (value - start1) / range1;
-  return start2 + (ratio * range2);
 }
 
 function generateTerrainColor(terrainType, normalizedNoise) {
@@ -80,39 +73,29 @@ function generateTerrain(x, y) {
   return terrain;
 }
 
-export function generateGrid() {
+export function generateTerrainGrid() {
   noise.seed(Math.random());
   for (let i = 0; i < gridWidth; i++) {
-    grid[i] = [];
+    terrainGrid[i] = [];
     for (let j = 0; j < gridHeight; j++) {
       const terrain = generateTerrain(i, j); // Create copy using object spread
       terrain.pixel = new Graphics(); // Create the graphics object
       terrain.pixel.rect(i * cellSize, j * cellSize, cellSize * gridMultiplier, cellSize * gridMultiplier);
       terrain.pixel.fill(terrain.color);
       terrainContainer.addChild(terrain.pixel);
-      grid[i][j] = terrain;
+      terrainGrid[i][j] = terrain;
     }
   }
 }
 
-export function isEmptyCell(x, y) {
-  let isEmpty = true;
-  for (let element of cells) {
-    if (element.x == x && element.y == y)
-      isEmpty = false;
-  }
-  return isEmpty;
+function map(value, start1, end1, start2, end2) {
+  const range1 = end1 - start1;
+  const range2 = end2 - start2;
+  const ratio = (value - start1) / range1;
+  return start2 + (ratio * range2);
 }
 
-export function randomOffset() {
-  const offset = Math.floor(Math.random() * 4); // Choose a random direction (up, down, left, right)
-  const newX = (offset === 0 ? -1 : offset === 2 ? 1 : 0);
-  const newY = (offset === 1 ? -1 : offset === 3 ? 1 : 0);
-  return {
-    x: newX,
-    y: newY
-  }
-}
+// Cells
 
 export const templateCell = {
   x: Number,
@@ -126,70 +109,106 @@ export const templateCell = {
 
     if (!this.energy) {
       this.state = "dead"
-    } else if (!this.offspring) {
-      this.state = "resting"
-    } else if (grid[this.x][this.y].type == 'plain') {
+    }
+    else if (terrainGrid[this.x][this.y].type == "plain") {
       this.state = "reproduction";
     }
 
     switch (this.state) {
       case "wandering":
 
-        const direction = randomOffset();
-        if (direction.x + this.x >= 0 && direction.x + this.x < gridWidth &&
-          direction.y + this.y >= 0 && direction.y + this.y < gridHeight &&
-          isEmptyCell(direction.x + this.x, direction.y + this.y) &&
-          this.energy
-        ) {
-          this.x = direction.x + this.x;
-          this.y = direction.y + this.y;
-          this.graphics.x = this.x * cellSize;
-          this.graphics.y = this.y * cellSize;
-          this.energy--
+        if (areEmptyCellsAround(this.x, this.y)) {
+          let offset = randomOffset(this.x, this.y);
+          if (!isOutOfBounds(offset.x + this.x, offset.y + this.y) &&
+            isEmptyCell(offset.x + this.x, offset.y + this.y) &&
+            this.energy
+          ) {
+
+            cellsGrid[this.x][this.y] = null;
+            this.x = offset.x + this.x;
+            this.y = offset.y + this.y;
+            this.graphics.x = this.x * cellSize;
+            this.graphics.y = this.y * cellSize;
+            cellsGrid[this.x][this.y] = this;
+
+          }
         }
-
-        break;
-
-      case "resting":
-        this.energy--;
         break;
 
       case "reproduction":
-        const offset = randomOffset()
-        if (isEmptyCell(offset.x + this.x, offset.y + this.y) &&
-          offset.x + this.x >= 0 && offset.x + this.x < gridWidth &&
-          offset.y + this.y >= 0 && offset.y + this.y < gridHeight
-        ) {
-          createCell(offset.x + this.x, offset.y + this.y);
-          this.offspring--;
+        if (areEmptyCellsAround(this.x, this.y)&&this.offspring) {
+          let offset = randomOffset(this.x, this.y)
+          if (
+            !isOutOfBounds(offset.x + this.x, offset.y + this.y) &&
+            isEmptyCell(offset.x + this.x, offset.y + this.y)
+          ) {
+            createCell(offset.x + this.x, offset.y + this.y);
+            this.offspring--;
+          }
         }
-
-
-        this.energy--;
         break;
 
       case "dead":
-        const index = cells.indexOf(this);
-        if (index > -1) {
-          cells.splice(index, 1);
-        }
+        cellsGrid[this.x][this.y] = null;
+        cells.splice(cells.indexOf(this), 1);
         this.graphics.destroy();
         break;
     }
     fillTracer(this);
+    this.energy--;
 
   }
 }
-export function createCell(x, y) {
 
+export function isEmptyCell(x, y) {
+  if (cellsGrid[x][y] == null) return true;
+  return false;
+}
+
+export function isOutOfBounds(x, y) {
+  if (x >= 0 && x < gridWidth && y >= 0 && y < gridHeight) return false;
+  return true;
+}
+
+export function areEmptyCellsAround(x, y) {
+  if (!isOutOfBounds(x, y - 1) && isEmptyCell(x, y - 1)) return true;
+  if (!isOutOfBounds(x, y + 1) && isEmptyCell(x, y + 1)) return true;
+  if (!isOutOfBounds(x - 1, y) && isEmptyCell(x - 1, y)) return true;
+  if (!isOutOfBounds(x + 1, y) && isEmptyCell(x + 1, y)) return true;
+  return false;
+}
+
+export function randomOffset(x, y) {
+  let availableOffsets = [];
+  if (!isOutOfBounds(x, y - 1) && isEmptyCell(x, y - 1)) availableOffsets.push({
+    x: 0,
+    y: -1
+  });
+  if (!isOutOfBounds(x, y + 1) && isEmptyCell(x, y + 1)) availableOffsets.push({
+    x: 0,
+    y: +1
+  });
+  if (!isOutOfBounds(x - 1, y) && isEmptyCell(x - 1, y)) availableOffsets.push({
+    x: -1,
+    y: 0
+  });
+  if (!isOutOfBounds(x + 1, y) && isEmptyCell(x + 1, y)) availableOffsets.push({
+    x: +1,
+    y: 0
+  });
+  const offset = availableOffsets[Math.random() * availableOffsets.length | 0];
+  return offset;
+}
+
+export function createCell(x, y) {
   const cell = {
     ...templateCell
   };
   cell.state = "wandering";
   cell.x = x;
   cell.y = y;
-  cell.energy = initialEnergy;
-  cell.offspring = maxOffsping;//Math.floor(Math.random() * maxOffsping)
+  cell.energy = initialEnergy; //Math.random()*initialEnergy|0;
+  cell.offspring = maxOffsping;
   cell.color = "rgb(255,0,0)";
   cell.graphics = new Graphics();
   cell.graphics.rect(0, 0, cellSize * gridMultiplier, cellSize * gridMultiplier);
@@ -197,13 +216,37 @@ export function createCell(x, y) {
   cell.graphics.y = y * cellSize;
   cell.graphics.fill(cell.color);
   cellsContainer.addChild(cell.graphics);
+  cellsGrid[x][y] = cell;
   cells.push(cell);
 }
+
+export function updateCells() {
+  for (let cell of cells) {
+    cell.update();
+
+  }
+  // for (let i of cellsGrid) {
+  //   for (let j of i) {
+  //     if (j != null)j.update();
+  //   }
+  // }
+}
+
+export function generateCellsGrid() {
+  for (let i = 0; i < gridWidth; i++) {
+    cellsGrid[i] = [];
+    for (let j = 0; j < gridHeight; j++) {
+      cellsGrid[i][j] = null;
+    }
+  }
+}
+
+// Tracers
 
 export function fillTracer(cell) {
   let tracer;
   let isEmpty = true;
-  for(let element of tracersContainer.children){
+  for (let element of tracersContainer.children) {
     if (element.x == cell.x * cellSize && element.y == cell.y * cellSize) {
       tracer = element;
       isEmpty = false;
@@ -218,19 +261,18 @@ export function fillTracer(cell) {
     tracer.y = cell.y * cellSize;
     tracer.fill(cell.color);
     tracer.alpha = tracersOpacityMultipler;
-  } 
-  else if (tracer.alpha+tracersOpacityMultipler <= tracersMaxOpacity)tracer.alpha += tracersOpacityMultipler;
+  } else if (tracer.alpha + tracersOpacityMultipler <= tracersMaxOpacity) tracer.alpha += tracersOpacityMultipler;
 }
 
-export function updateTracers(){
-for (let element of tracersContainer.children){
-  element.alpha-=0.02;
-  if(element.alpha <= 0){
-    let index = tracersContainer.children.indexOf(element);
-        if (index > -1) {
-          tracersContainer.children.splice(index, 1);
-        }}
-}
+export function updateTracers() {
+  for (let element of tracersContainer.children) {
+    element.alpha -= 0.02;
+    if (element.alpha <= 0) {
+      let index = tracersContainer.children.indexOf(element);
+      if (index > -1) {
+        tracersContainer.children.splice(index, 1);
+      }
+    }
+  }
 
 }
-

@@ -1,5 +1,5 @@
 // app.js
-import { generateGrid,createCell,updateTracers } from './objects.js'; 
+import { generateTerrainGrid,createCell,updateTracers,generateCellsGrid, isEmptyCell,updateCells } from './objects.js'; 
 import { Application,Container}from './libraries/pixi.mjs'
 import { updateDebug } from './menu.js';
 import * as menu from './menu.js';
@@ -25,7 +25,6 @@ export function initialize() {
   terrainContainer.children = [];
   cellsContainer.children = [];
   tracersContainer.children = [];
-  cells = [];
   cellSize = parseFloat(document.getElementById('panelCellSize').value);
   tracersOpacityMultipler =  parseFloat(document.getElementById('panelTracersOpacityMultipler').value);
   initialEnergy = parseFloat(document.getElementById('panelInitEnergy').value);
@@ -34,7 +33,11 @@ export function initialize() {
   app.renderer.resize(window.innerWidth, window.innerHeight)
   gridWidth = window.innerWidth/cellSize;
   gridHeight = window.innerHeight/cellSize;
-  generateGrid();
+  generateTerrainGrid();
+  cells=[];
+  generateCellsGrid();
+  logicTick=0;
+  
 
 }
 
@@ -48,21 +51,22 @@ document.getElementById('panelTracersOpacityMultipler').value = tracersOpacityMu
 
 export let tracersMaxOpacity = 0.9;
 
-export let initialEnergy = 15;
+export let initialEnergy = 20;
 document.getElementById('panelInitEnergy').value = initialEnergy;
 
 export let maxOffsping = 2;
 document.getElementById('panelMaxOffspring').value = maxOffsping;
 
-export let logicSpeed = 100;
-
-
+export let logicSpeed = 1000;
+export let logicTick;
 
 export let gridWidth = Math.trunc(window.innerWidth/cellSize);
 export let gridHeight = Math.trunc(window.innerHeight/cellSize);
 
-export let grid = [];
+export let terrainGrid = [];
 export let cells = [];
+export let cellsGrid = [];
+
 
 export let terrainContainer = new Container();
 export let cellsContainer = new Container();
@@ -75,11 +79,12 @@ app.stage.addChild(tracersContainer);
 initialize();
 
 function update_logic(){
-for (let element of cells){
-  element.update();
-}
+updateCells();
 updateTracers();
 updateDebug();
+logicTick++;
+
+//console.log(tracersContainer.children);
 
 }
 
@@ -89,11 +94,11 @@ const delta = time.deltaTime;
 
 }
 
-setInterval(update_logic,logicSpeed)
+export let gameLogicUpdater = setInterval(update_logic,logicSpeed);
 app.ticker.add((time) => update_render(time));
 
 app.stage.on('mousedown', (event) => { 
   const x = Math.trunc(event.data.global.x/cellSize);
   const y = Math.trunc(event.data.global.y/cellSize);
-  createCell(x,y)
+  if(isEmptyCell(x,y))createCell(x,y)
 });

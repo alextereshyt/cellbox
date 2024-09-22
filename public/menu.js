@@ -5,7 +5,8 @@ import {
     initialize,
     cells,
     gridHeight,
-    gridWidth
+    gridWidth,
+    logicTick
 } from "./game.js";
 
 export const initButton = document.getElementById('initialize');
@@ -16,8 +17,9 @@ export const panelDebugInfo = document.getElementById('panelDebugInfo');
 export function updateDebug(){
 panelDebugInfo.textContent = 
 "grid: "+Math.trunc(gridWidth).toString() +" x "+ Math.trunc(gridHeight).toString()+"\n" +
-"cells count: "+cells.length.toString() + "\n" +
-"tracers count: "+tracersContainer.children.length.toString()
+"cells count: "+cellsContainer.children.length.toString() + "\n" +
+"tracers count: "+tracersContainer.children.length.toString()+ "\n" +
+"tick: " + logicTick.toString();
 ;
 
 }
