@@ -9,7 +9,10 @@
 </head>
 
 <body>
-    <div class="control-panel">
+    
+    <div class="control-panel" id="debugPanel">
+        <div id="panelHideButton"></div>
+        <div class="panel-content">
         <div class="title">
             <label>Cellular War v.1</label>
         </div>
@@ -36,10 +39,6 @@
             <input type="number" class="number" id="panelCellSize" step="1">
         </div>
         <div class="option">
-            <label>grid gaps:</label>
-            <input type="number" class="number" id="panelGridMultiplier" step="0.1" >
-        </div>
-        <div class="option">
             <label>max energy:</label>
             <input type="number" class="number" id="panelInitEnergy" step="1">
         </div>
@@ -55,7 +54,7 @@
         <div class="option-centered">
         <button class="button" id="initialize">Initialize</button>
         </div>
-        
+        </div>
 
     </div>
 

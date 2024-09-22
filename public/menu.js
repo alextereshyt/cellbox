@@ -15,7 +15,7 @@ export const panelDebugInfo = document.getElementById('panelDebugInfo');
 
 export function updateDebug(){
 panelDebugInfo.textContent = 
-"grid: "+gridWidth.toString() +" x "+ gridHeight.toString()+"\n" +
+"grid: "+Math.trunc(gridWidth).toString() +" x "+ Math.trunc(gridHeight).toString()+"\n" +
 "cells count: "+cells.length.toString() + "\n" +
 "tracers count: "+tracersContainer.children.length.toString()
 ;
@@ -39,5 +39,23 @@ panelCellsStatus.onclick = () => {
 
     } else {
         cellsContainer.visible = false;
+    }
+}
+
+export const panelHideButton = document.getElementById('panelHideButton');
+export const debugPanel = document.getElementById('debugPanel');
+
+panelHideButton.innerHTML = ">";
+export let panelHideButtonSatus = true;
+panelHideButton.onclick = () => {
+    if (panelHideButtonSatus == true) {
+        panelHideButton.innerHTML = "<";
+        debugPanel.style.transform = "translateX("+debugPanel.offsetWidth+"px)"
+        panelHideButtonSatus = false
+
+    } else {
+        panelHideButtonSatus = true;
+        panelHideButton.innerHTML = ">";
+        debugPanel.style.transform = "translateX(0px)"
     }
 }

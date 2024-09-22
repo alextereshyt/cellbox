@@ -97,10 +97,10 @@ export function generateGrid() {
 
 export function isEmptyCell(x, y) {
   let isEmpty = true;
-  cells.forEach(element => {
+  for (let element of cells) {
     if (element.x == x && element.y == y)
       isEmpty = false;
-  });
+  }
   return isEmpty;
 }
 
@@ -203,12 +203,12 @@ export function createCell(x, y) {
 export function fillTracer(cell) {
   let tracer;
   let isEmpty = true;
-  tracersContainer.children.forEach(element => {
+  for(let element of tracersContainer.children){
     if (element.x == cell.x * cellSize && element.y == cell.y * cellSize) {
       tracer = element;
       isEmpty = false;
     }
-  });
+  }
 
   if (isEmpty) {
     tracer = new Graphics();
@@ -223,14 +223,14 @@ export function fillTracer(cell) {
 }
 
 export function updateTracers(){
-tracersContainer.children.forEach(element => {
+for (let element of tracersContainer.children){
   element.alpha-=0.02;
   if(element.alpha <= 0){
-    var index = tracersContainer.children.indexOf(element);
+    let index = tracersContainer.children.indexOf(element);
         if (index > -1) {
           tracersContainer.children.splice(index, 1);
         }}
-});
+}
 
 }
 

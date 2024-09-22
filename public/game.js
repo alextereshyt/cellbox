@@ -27,14 +27,13 @@ export function initialize() {
   tracersContainer.children = [];
   cells = [];
   cellSize = parseFloat(document.getElementById('panelCellSize').value);
-  gridMultiplier = parseFloat(document.getElementById('panelGridMultiplier').value);
   tracersOpacityMultipler =  parseFloat(document.getElementById('panelTracersOpacityMultipler').value);
   initialEnergy = parseFloat(document.getElementById('panelInitEnergy').value);
   maxOffsping = parseFloat(document.getElementById('panelMaxOffspring').value);
 
   app.renderer.resize(window.innerWidth, window.innerHeight)
-  gridWidth = Math.trunc(window.innerWidth/cellSize);
-  gridHeight = Math.trunc(window.innerHeight/cellSize);
+  gridWidth = window.innerWidth/cellSize;
+  gridHeight = window.innerHeight/cellSize;
   generateGrid();
 
 }
@@ -43,7 +42,6 @@ export let cellSize = 10;
 document.getElementById('panelCellSize').value = cellSize;
 
 export let gridMultiplier = 1;
-document.getElementById('panelGridMultiplier').value = gridMultiplier;
 
 export let tracersOpacityMultipler = 0.2;
 document.getElementById('panelTracersOpacityMultipler').value = tracersOpacityMultipler;
@@ -56,7 +54,7 @@ document.getElementById('panelInitEnergy').value = initialEnergy;
 export let maxOffsping = 2;
 document.getElementById('panelMaxOffspring').value = maxOffsping;
 
-export let logicSpeed = 10;
+export let logicSpeed = 100;
 
 
 
@@ -77,11 +75,9 @@ app.stage.addChild(tracersContainer);
 initialize();
 
 function update_logic(){
-
-cells.forEach(element => {
+for (let element of cells){
   element.update();
-});
-
+}
 updateTracers();
 updateDebug();
 
