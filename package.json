@@ -1,8 +1,8 @@
 {
-  "name": "cellular-war",
+  "name": "cellbox",
   "version": "1.0.0",
   "type": "module",
-  "description": "**Overview**\r Cellular War is a procedurally generated cellular automaton game that simulates the rise and fall of civilizations on a map resembling the real world. The game is designed to run autonomously, with civilizations interacting and competing for resources.",
+  "description": "**Overview**\r CellBox is a procedurally generated cellular automaton game that simulates the rise and fall of civilizations on a map resembling the real world. The game is designed to run autonomously, with civilizations interacting and competing for resources.",
   "main": "app.js",
   "scripts": {
     "dev": "live-server ./public",
