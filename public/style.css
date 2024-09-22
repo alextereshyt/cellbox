@@ -57,6 +57,7 @@
     overflow: visible;
     cursor: pointer; 
     transition: all 0.2s ease-in-out; 
+    border: 3px #DFE6E9 solid;
 }
   
 #panelHideButton:hover {

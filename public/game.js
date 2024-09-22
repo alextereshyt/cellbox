@@ -20,6 +20,7 @@ await app.init({
 document.body.appendChild(app.canvas);
 app.renderer.canvas.style.position = 'absolute';
 app.stage.interactive = true;
+menu.panelInit();
 
 export function initialize() {
   terrainContainer.children = [];
@@ -27,7 +28,7 @@ export function initialize() {
   tracersContainer.children = [];
   cellSize = parseFloat(document.getElementById('panelCellSize').value);
   tracersOpacityMultipler =  parseFloat(document.getElementById('panelTracersOpacityMultipler').value);
-  initialEnergy = parseFloat(document.getElementById('panelInitEnergy').value);
+  maxAge = parseFloat(document.getElementById('panelInitEnergy').value);
   maxOffsping = parseFloat(document.getElementById('panelMaxOffspring').value);
 
   app.renderer.resize(window.innerWidth, window.innerHeight)
@@ -51,13 +52,13 @@ document.getElementById('panelTracersOpacityMultipler').value = tracersOpacityMu
 
 export let tracersMaxOpacity = 0.9;
 
-export let initialEnergy = 20;
-document.getElementById('panelInitEnergy').value = initialEnergy;
+export let maxAge = 100;
+document.getElementById('panelInitEnergy').value = maxAge;
 
 export let maxOffsping = 2;
 document.getElementById('panelMaxOffspring').value = maxOffsping;
 
-export let logicSpeed = 1000;
+export let logicSpeed = 100;
 export let logicTick;
 
 export let gridWidth = Math.trunc(window.innerWidth/cellSize);
@@ -67,6 +68,15 @@ export let terrainGrid = [];
 export let cells = [];
 export let cellsGrid = [];
 
+export let terrainTypeWaterValueRange = {start:0,end:0.64}
+export let terrainTypeSandValueRange = {start:terrainTypeWaterValueRange.end,end:0.7}
+export let terrainTypePlainValueRange = {start:terrainTypeSandValueRange.end,end:0.9}
+export let terrainTypeRockValueRange = {start:terrainTypePlainValueRange.end,end:1}
+
+export let terrainTypeWaterColorRange = {start:{r:0,g:18,b:156},end:{r:0,g:122,b:200}}
+export let terrainTypeSandColorRange = {start:{r:193,g:196,b:130},end:{r:145,g:148,b:130}}
+export let terrainTypePlainColorRange = {start:{r:81,g:163,b:72},end:{r:12,g:97,b:12}}
+export let terrainTypeRockColorRange = {start:{r:90,g:90,b:90},end:{r:230,g:230,b:230}}
 
 export let terrainContainer = new Container();
 export let cellsContainer = new Container();

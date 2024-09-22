@@ -14,13 +14,12 @@ initButton.onclick = initialize;
 
 export const panelDebugInfo = document.getElementById('panelDebugInfo');
 
-export function updateDebug(){
-panelDebugInfo.textContent = 
-"grid: "+Math.trunc(gridWidth).toString() +" x "+ Math.trunc(gridHeight).toString()+"\n" +
-"cells count: "+cellsContainer.children.length.toString() + "\n" +
-"tracers count: "+tracersContainer.children.length.toString()+ "\n" +
-"tick: " + logicTick.toString();
-;
+export function updateDebug() {
+    panelDebugInfo.textContent =
+        "grid: " + Math.trunc(gridWidth).toString() + " x " + Math.trunc(gridHeight).toString() + "\n" +
+        "cells count: " + cellsContainer.children.length.toString() + "\n" +
+        "tracers count: " + tracersContainer.children.length.toString() + "\n" +
+        "tick: " + logicTick.toString();;
 
 }
 
@@ -47,17 +46,37 @@ panelCellsStatus.onclick = () => {
 export const panelHideButton = document.getElementById('panelHideButton');
 export const debugPanel = document.getElementById('debugPanel');
 
-panelHideButton.innerHTML = ">";
-export let panelHideButtonSatus = true;
-panelHideButton.onclick = () => {
-    if (panelHideButtonSatus == true) {
-        panelHideButton.innerHTML = "<";
-        debugPanel.style.transform = "translateX("+debugPanel.offsetWidth+"px)"
-        panelHideButtonSatus = false
-
+export function panelInit() {
+    if (localStorage.hasOwnProperty("panelHideStatus")) {
+        panelHideStatus = JSON.parse(localStorage.getItem("panelHideStatus"));
     } else {
-        panelHideButtonSatus = true;
+        localStorage.setItem("panelHideStatus", false);
+        panelHideStatus = false;
+    }
+     
+    if (panelHideStatus) {
+        panelHideButton.innerHTML = "<";
+        debugPanel.style.transform = "translateX(" + debugPanel.offsetWidth + "px)";
+    } else {
+        
+        panelHideButton.innerHTML = ">";
+        debugPanel.style.transform = "translateX(0px)";
+    }
+}
+export let panelHideStatus;
+
+panelHideButton.onclick = () => {
+    
+    if (panelHideStatus) {
+        panelHideStatus = false;
+        localStorage.setItem("panelHideStatus", panelHideStatus);
         panelHideButton.innerHTML = ">";
         debugPanel.style.transform = "translateX(0px)"
+    } else {
+        panelHideStatus = true;
+        localStorage.setItem("panelHideStatus", panelHideStatus);
+        panelHideButton.innerHTML = "<";
+        debugPanel.style.transform = "translateX(" + debugPanel.offsetWidth + "px)"
+
     }
 }
