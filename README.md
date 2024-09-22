@@ -1,9 +1,10 @@
-![image](https://github.com/user-attachments/assets/7944e43c-b82d-4302-b3ab-60f486de68b2)
+![image](https://github.com/user-attachments/assets/708bb47d-a477-4c70-bd7a-3ef6502b3324)
 
-### Cellular War
+
+### CellBox
 
 **Overview**
-Cellular War is a procedurally generated cellular automaton game that simulates the rise and fall of civilizations on a map resembling the real world. The game is designed to run autonomously, with civilizations interacting and competing for resources.
+CellBox is a procedurally generated cellular automaton game that simulates the rise and fall of civilizations on a map resembling the real world. The game is designed to run autonomously, with civilizations interacting and competing for resources.
 
 **Core Mechanics**
 * **Procedural World Generation:** The game map is generated algorithmically, creating realistic terrain features and resource distributions.
