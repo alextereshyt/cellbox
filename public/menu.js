@@ -3,11 +3,9 @@ import {
     tracersContainer,
     cellsContainer,
     initialize,
-    cells,
     gridHeight,
     gridWidth,
     logicTick,
-    gameLogicUpdater,
     changeLogicSpeed
 } from "./game.js";
 
@@ -55,12 +53,12 @@ export function panelInit() {
         localStorage.setItem("panelHideStatus", false);
         panelHideStatus = false;
     }
-     
+
     if (panelHideStatus) {
         panelHideButton.innerHTML = "<";
         panel.style.transform = "translateX(" + panel.offsetWidth + "px)";
     } else {
-        
+
         panelHideButton.innerHTML = ">";
         panel.style.transform = "translateX(0px)";
     }
@@ -68,7 +66,7 @@ export function panelInit() {
 export let panelHideStatus;
 
 panelHideButton.onclick = () => {
-    
+
     if (panelHideStatus) {
         panelHideStatus = false;
         localStorage.setItem("panelHideStatus", panelHideStatus);
@@ -85,12 +83,10 @@ panelHideButton.onclick = () => {
 
 export const panelTickSpeed = document.getElementById('panelTickSpeed');
 
-panelTickSpeed.onmousedown = () =>{
+panelTickSpeed.onmousedown = () => {
     changeLogicSpeed(0);
 }
 
-panelTickSpeed.onchange = () =>{
-changeLogicSpeed(panelTickSpeed.value);
+panelTickSpeed.onchange = () => {
+    changeLogicSpeed(panelTickSpeed.value);
 }
-
-
