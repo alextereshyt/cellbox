@@ -21,7 +21,10 @@ import {
   terrainTypeWaterColorRange,
   terrainTypeSandColorRange,
   terrainTypePlainColorRange,
-  terrainTypeRockColorRange
+  terrainTypeRockColorRange,
+  targetDistanceRange,
+  terrainLifeValidation,
+  cellsRestingTime
 } from './game.js';
 import {
   Graphics
@@ -127,39 +130,49 @@ export function isValidAge(age) {
   return false;
 }
 
-export function isTerrainValidForLife(x,y){
-return (terrainGrid[x][y].difficulty > terrainTypeWaterValueRange.end)
+export function isTerrainValidForLife(x, y) {
+  return (terrainGrid[x][y].difficulty > terrainLifeValidation)
 }
+
 
 export const templateCell = {
   x: Number,
   y: Number,
   state: String,
+  stateProps: {},
   color: String,
+  type: String,
   graphics: null,
   age: Number,
   offspring: Number,
+
   update: function () {
 
-    if (this.age > maxAge) {
-      this.state = "dead"
-    } else if ( 
-      isTerrainValidForLife(this.x,this.y)
-      && hasNeighborCells(this.x, this.y) 
-      && isValidAge(this.age) 
-      && this.offspring 
-      //&& Math.random() * 10 | 0 == 9
-    ) {
-      this.state = "reproduction";
-    } else this.state = "wandering";
+    // if (this.age > maxAge) {
+    //   this.state = "dead"
+    // } //else if (
+    // //   isTerrainValidForLife(this.x, this.y) &&
+    // //   hasNeighborCells(this.x, this.y) &&
+    // //   isValidAge(this.age) &&
+    // //   this.offspring
+    // // ) {
+    // //   this.state = "reproduction";
+    // // } 
+    // else if (!isTerrainValidForLife(this.x,this.y)) {
+    //   this.state = "dead";
+    // } 
+    // else if (this.target) this.state = "wandering";
+    // else this.state = "resting";
 
     switch (this.state) {
       case "wandering":
 
         if (areEmptyCellsAround(this.x, this.y)) {
-          let offset = groundOffset(this.x, this.y);
+          let offset = pathfinding(this.x, this.y, this.stateProps.target.x, this.stateProps.target.y);
+
           if (!isOutOfBounds(offset.x + this.x, offset.y + this.y) &&
-            isEmptyCell(offset.x + this.x, offset.y + this.y)
+            isEmptyCell(offset.x + this.x, offset.y + this.y) &&
+            isTerrainValidForLife(offset.x + this.x, offset.y + this.y)
           ) {
 
             cellsGrid[this.x][this.y] = null;
@@ -169,9 +182,23 @@ export const templateCell = {
             this.graphics.y = this.y * cellSize;
             cellsGrid[this.x][this.y] = this;
 
+          } else {
+            this.state = "resting";
+            this.stateProps = {ticksRemaining: cellsRestingTime}
+
           }
         }
         break;
+      case "resting":
+        if (this.stateProps.ticksRemaining == 0) {
+          this.state = "wandering";
+          this.stateProps = {
+            target: getRandomTarget(this.x, this.y),
+          };
+        }
+        else this.stateProps.ticksRemaining--;
+        break;
+
       case "reproduction":
         if (areEmptyCellsAround(this.x, this.y)) {
           let offset = groundOffset(this.x, this.y)
@@ -191,6 +218,10 @@ export const templateCell = {
         this.graphics.destroy();
         break;
     }
+    if (this.age > maxAge) {
+    this.state = "dead"
+    } 
+
     fillTracer(this);
     this.age++;
 
@@ -217,28 +248,59 @@ export function hasNeighborCells(x, y) {
 
 
 export function areEmptyCellsAround(x, y) {
-  if (!isOutOfBounds(x, y - 1) && isEmptyCell(x, y - 1) && isTerrainValidForLife(x,y-1)) return true;
-  if (!isOutOfBounds(x, y + 1) && isEmptyCell(x, y + 1) && isTerrainValidForLife(x,y+1)) return true;
-  if (!isOutOfBounds(x - 1, y) && isEmptyCell(x - 1, y) && isTerrainValidForLife(x-1,y)) return true;
-  if (!isOutOfBounds(x + 1, y) && isEmptyCell(x + 1, y) && isTerrainValidForLife(x+1,y)) return true;
+  if (!isOutOfBounds(x, y - 1) && isEmptyCell(x, y - 1) && isTerrainValidForLife(x, y - 1)) return true;
+  if (!isOutOfBounds(x, y + 1) && isEmptyCell(x, y + 1) && isTerrainValidForLife(x, y + 1)) return true;
+  if (!isOutOfBounds(x - 1, y) && isEmptyCell(x - 1, y) && isTerrainValidForLife(x - 1, y)) return true;
+  if (!isOutOfBounds(x + 1, y) && isEmptyCell(x + 1, y) && isTerrainValidForLife(x + 1, y)) return true;
   return false;
 }
 
+function getRandomTarget(x, y) {
+  let target = {}
+  target.x = x + (Math.random() * targetDistanceRange * 2 | 0) - targetDistanceRange;
+  target.y = y + (Math.random() * targetDistanceRange * 2 | 0) - targetDistanceRange;
+  return target;
+}
+
+function getEuclideanDistance(x1, y1, x2, y2) {
+  return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+}
+
+
+function pathfinding(startX, startY, targetX, targetY) {
+  let dx = targetX - startX;
+  let dy = targetY - startY;
+
+  let stepX = 0;
+  let stepY = 0;
+
+  let decision = Math.random() * 2 | 0;
+
+  if (decision) stepX = dx === 0 ? 0 : dx / Math.abs(dx);
+  else stepY = dy === 0 ? 0 : dy / Math.abs(dy);
+
+  return {
+    x: stepX,
+    y: stepY
+  };
+}
+
+
 export function groundOffset(x, y) {
   let availableOffsets = [];
-  if (!isOutOfBounds(x, y - 1) && isEmptyCell(x, y - 1) && isTerrainValidForLife(x,y-1)) availableOffsets.push({
+  if (!isOutOfBounds(x, y - 1) && isEmptyCell(x, y - 1) && isTerrainValidForLife(x, y - 1)) availableOffsets.push({
     x: 0,
     y: -1
   });
-  if (!isOutOfBounds(x, y + 1) && isEmptyCell(x, y + 1) &&isTerrainValidForLife(x,y+1)) availableOffsets.push({
+  if (!isOutOfBounds(x, y + 1) && isEmptyCell(x, y + 1) && isTerrainValidForLife(x, y + 1)) availableOffsets.push({
     x: 0,
     y: +1
   });
-  if (!isOutOfBounds(x - 1, y) && isEmptyCell(x - 1, y) && isTerrainValidForLife(x-1,y)) availableOffsets.push({
+  if (!isOutOfBounds(x - 1, y) && isEmptyCell(x - 1, y) && isTerrainValidForLife(x - 1, y)) availableOffsets.push({
     x: -1,
     y: 0
   });
-  if (!isOutOfBounds(x + 1, y) && isEmptyCell(x + 1, y) && isTerrainValidForLife(x+1,y)) availableOffsets.push({
+  if (!isOutOfBounds(x + 1, y) && isEmptyCell(x + 1, y) && isTerrainValidForLife(x + 1, y)) availableOffsets.push({
     x: +1,
     y: 0
   });
@@ -250,11 +312,15 @@ export function createCell(x, y) {
   const cell = {
     ...templateCell
   };
-  cell.state = "wandering";
+  cell.state = "resting";
+  cell.stateProps = {
+    ticksRemaining: 1
+  };
+  cell.type = "worker";
   cell.x = x;
   cell.y = y;
   cell.age = 0;
-  cell.offspring = maxOffsping;
+  cell.offspring = 0;
   cell.color = "rgb(255,0,0)";
   cell.graphics = new Graphics();
   cell.graphics.rect(0, 0, cellSize * gridMultiplier, cellSize * gridMultiplier);

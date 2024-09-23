@@ -10,7 +10,7 @@
 
 <body>
     
-    <div class="control-panel" id="debugPanel">
+    <div class="control-panel" id="controlPanel">
         <div id="panelHideButton"></div>
         <div class="panel-content">
         <div class="title">
@@ -27,13 +27,20 @@
             <input type="checkbox" class="checkbox" id="panelTracersStatus" checked>
             <label>show tracers</label>
         </div>
+
+        <div class="option">
+            <label>tick speed</label>
+            <input type="range" class="slider" id="panelTickSpeed" min="0" max="10">
+        </div>
+
+
         <br>
         <label>Debug info</label>
         <pre id="panelDebugInfo">
         </pre> 
         <br>
  
-        <label>Init options</label>
+        <label>Gen options</label>
         <div class="option">
             <label>cell size:</label>
             <input type="number" class="number" id="panelCellSize" step="1">
@@ -52,7 +59,7 @@
         </div>
 
         <div class="option-centered">
-        <button class="button" id="initialize">Initialize</button>
+        <button class="button" id="initialize">Generate</button>
         </div>
         </div>
 

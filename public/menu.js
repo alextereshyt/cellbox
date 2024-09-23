@@ -6,7 +6,9 @@ import {
     cells,
     gridHeight,
     gridWidth,
-    logicTick
+    logicTick,
+    gameLogicUpdater,
+    changeLogicSpeed
 } from "./game.js";
 
 export const initButton = document.getElementById('initialize');
@@ -17,8 +19,8 @@ export const panelDebugInfo = document.getElementById('panelDebugInfo');
 export function updateDebug() {
     panelDebugInfo.textContent =
         "grid: " + Math.trunc(gridWidth).toString() + " x " + Math.trunc(gridHeight).toString() + "\n" +
-        "cells count: " + cellsContainer.children.length.toString() + "\n" +
-        "tracers count: " + tracersContainer.children.length.toString() + "\n" +
+        "cells: " + cellsContainer.children.length.toString() + "\n" +
+        "tracers: " + tracersContainer.children.length.toString() + "\n" +
         "tick: " + logicTick.toString();;
 
 }
@@ -44,7 +46,7 @@ panelCellsStatus.onclick = () => {
 }
 
 export const panelHideButton = document.getElementById('panelHideButton');
-export const debugPanel = document.getElementById('debugPanel');
+export const panel = document.getElementById('controlPanel');
 
 export function panelInit() {
     if (localStorage.hasOwnProperty("panelHideStatus")) {
@@ -56,11 +58,11 @@ export function panelInit() {
      
     if (panelHideStatus) {
         panelHideButton.innerHTML = "<";
-        debugPanel.style.transform = "translateX(" + debugPanel.offsetWidth + "px)";
+        panel.style.transform = "translateX(" + panel.offsetWidth + "px)";
     } else {
         
         panelHideButton.innerHTML = ">";
-        debugPanel.style.transform = "translateX(0px)";
+        panel.style.transform = "translateX(0px)";
     }
 }
 export let panelHideStatus;
@@ -71,12 +73,24 @@ panelHideButton.onclick = () => {
         panelHideStatus = false;
         localStorage.setItem("panelHideStatus", panelHideStatus);
         panelHideButton.innerHTML = ">";
-        debugPanel.style.transform = "translateX(0px)"
+        panel.style.transform = "translateX(0px)"
     } else {
         panelHideStatus = true;
         localStorage.setItem("panelHideStatus", panelHideStatus);
         panelHideButton.innerHTML = "<";
-        debugPanel.style.transform = "translateX(" + debugPanel.offsetWidth + "px)"
+        panel.style.transform = "translateX(" + panel.offsetWidth + "px)"
 
     }
 }
+
+export const panelTickSpeed = document.getElementById('panelTickSpeed');
+
+panelTickSpeed.onmousedown = () =>{
+    changeLogicSpeed(0);
+}
+
+panelTickSpeed.onchange = () =>{
+changeLogicSpeed(panelTickSpeed.value);
+}
+
+
